@@ -45,14 +45,14 @@ object ParquetCCTools {
         |t3 as
         |(select CONCAT(bucket,"/",prefix) as pk ,sum(size) as pk_total_size from t1 group by CONCAT(bucket,"/",prefix))
         |
-        |select t3.pk,t3.pk_total_size,t2.bucket,t2.key as pk_sample_key,t2.size as pk_sample_key_size
+        |select t3.pk,cast(cast(t3.pk_total_size as  bigint) as string) as pk_total_size ,t2.bucket,t2.key as pk_sample_key,cast (cast(t2.size as bigint)  as string)as pk_sample_key_size
         | from t3 left join t2 on t3.pk = t2.pk
         | where t2.rn=1
         |
         |""".stripMargin
 
     val sampleData = ss.sql(sql)
-    //sampleData.limit(10).show(false)
+//    sampleData.limit(10).show(false)
     // 将计算后的采样数据存储到一个文件中
     val sampleDataFile = parmas.smaple_data_output_path
     sampleData.repartition(1).write.mode("overwrite").option("header", "true").csv(sampleDataFile)
@@ -62,13 +62,12 @@ object ParquetCCTools {
 
     val resList = new util.ArrayList[Future[CalcResult]]()
     val executors = Executors.newFixedThreadPool(parmas.thead_num.toInt)
-    var taskIndex = 0
     sampleDataCsv.collect().foreach(x => {
       //      ProcessTask.processSampleData(x,parmas, ss,taskIndex)
-      taskIndex = taskIndex + 1
       val task = executors.submit(new Callable[CalcResult] {
         override def call(): CalcResult = {
-          val res = ProcessTask.processSampleData(x, parmas, ss, taskIndex, log)
+          val ctname = Thread.currentThread().getName+"-"+System.currentTimeMillis()
+          val res = ProcessTask.processSampleData(x, parmas, ss, ctname, log)
           res
         }
       })
