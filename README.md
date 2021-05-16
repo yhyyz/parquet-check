@@ -17,6 +17,8 @@ result_dir: save result  # 最终的结果数据
 -n, --thead_num <value>  thead_num: default 50  # 执行任务的线程数，默认50
 -m, --sample_file_min <value>  sample_file_min: sample_file_min: default 100000000 bytes  # 采样时文件的最小值，会根据最小值和最大值筛选文件，并且选择最小值和最大值之间的最大文件作为采样文件
 -n, --sample_file_max <value>  sample_file_max: sample_file_max: default 150000000 bytes  # 采样时文件的最大值，，会根据最小值和最大值筛选文件，并且选择最小值和最大值之间的最大文件作为采样文件
+-f, --s3 <value>   # 默认s3a, 支持 s3和s3a 两个值
+
 ```
 
 #### job example
@@ -26,6 +28,7 @@ spark-submit  --master yarn \
 --driver-memory 4g \
 --class poc.ParquetCCTools /home/hadoop/parquet-check-1.0-SNAPSHOT-jar-with-dependencies.jar \
 -e prod \
+-f s3a \
 -i s3a://***/tmp/inv_test.csv \
 -s s3a://***/tmp/sample_data_output/ \
 -t s3a://***/tmp/sample_tmp_data/ \
