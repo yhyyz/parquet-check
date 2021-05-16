@@ -28,7 +28,7 @@ object ProcessTask {
     val pk = x.getAs[String]("pk")
     val calcRes = CalcResult(pk, pk_total_size, bucket, pk_sample_key, pk_sample_key_size, "", "")
 
-      val filePath = "s3a://" + bucket + "/" + pk_sample_key
+      val filePath = parmas.fs+"://" + bucket + "/" + pk_sample_key
       val hdfsConf = new Configuration()
       val inputPath = new Path(filePath)
       val inputFileStatus: FileStatus = inputPath.getFileSystem(hdfsConf).getFileStatus(inputPath)

@@ -5,6 +5,7 @@ case class Config(
                    inventry_s3_csv_path:String = "",
                    smaple_data_output_path:String = "",
                    tmp_data_dir:String ="",
+                   fs:String ="s3a",
                    result_dir:String ="",
                    thead_num:String="50",
                    sample_file_min:String = "100000000",
@@ -26,6 +27,7 @@ object Config {
       opt[String]('n', "thead_num").optional().action((x, config) => config.copy(thead_num = x)).text("thead_num: default 10 ")
       opt[String]('m', "sample_file_min").optional().action((x, config) => config.copy(sample_file_min = x)).text("sample_file_min: default 100000000 bytes")
       opt[String]('x', "sample_file_max").optional().action((x, config) => config.copy(sample_file_max = x)).text("sample_file_max: default 150000000 bytes")
+      opt[String]('f', "s3").optional().action((x, config) => config.copy(fs = x)).text("file system: default s3a")
 
     }
     parser.parse(args, Config()) match {

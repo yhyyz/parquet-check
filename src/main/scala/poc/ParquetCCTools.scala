@@ -35,13 +35,13 @@ object ParquetCCTools {
      * 因此有了metastore信息后，修改下面的sql和metastore做个join获取表级别采样即可
      */
     val sql =
-      """
+      s"""
         |with t1 as
         |(select bucket, S3KeyPrefix(key) as prefix , S3KeySuffix(key) as suffix, size,key
         |from s3_inventry ),
         |t2 as
         |(select  key , size ,bucket, CONCAT(bucket,"/",prefix) as pk, ROW_NUMBER() OVER(PARTITION BY  CONCAT(bucket,"/",prefix) order by size desc)  as rn
-        |from t1 where t1.suffix!="" and  size >1000000 and size <150000000),
+        |from t1 where t1.suffix!="" and  size >${parmas.sample_file_min} and size <${parmas.sample_file_max}),
         |t3 as
         |(select CONCAT(bucket,"/",prefix) as pk ,sum(size) as pk_total_size from t1 group by CONCAT(bucket,"/",prefix))
         |
